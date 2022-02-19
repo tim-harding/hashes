@@ -1,59 +1,5 @@
 #include "md5.h"
 
-int main() {
-    char* message1 = "The quick brown fox jumps over the lazy dog";
-    Digest expected1 = {
-        .a = 0x9e107d9d,
-        .b = 0x372bb682,
-        .c = 0x6bd81d35,
-        .d = 0x42a419d6,
-    };
-    test(message1, sizeof(message1), expected1);
-
-    char* message2 = "The quick brown fox jumps over the lazy dog.";
-    Digest expected2 = {
-        .a = 0xe4d909c2,
-        .b = 0x90d0fb1c,
-        .c = 0xa068ffad,
-        .d = 0xdf22cbd0,
-    };
-    test(message2, sizeof(message2), expected2);
-
-    char* message3 = "";
-    Digest expected3 = {
-        .a = 0xd41d8cd9,
-        .b = 0x8f00b204,
-        .c = 0xe9800998,
-        .d = 0xecf8427e,
-    };
-    test(message3, sizeof(message3), expected3);
-}
-
-bool Digest_equal(Digest left, Digest right) {
-    return
-        left.a == right.a &&
-        left.b == right.b &&
-        left.c == right.c &&
-        left.d == right.d;
-}
-
-void Digest_print(Digest digest) {
-    printf("%x%x%x%x", digest.a, digest.b, digest.c, digest.d);
-}
-
-void test(char* message, const u32 message_length, Digest expected) {
-    Digest digest = hash(message, message_length);
-    if (Digest_equal(digest, expected)) {
-        printf("Success: %s\n\n", message);
-    } else {
-        printf("Failure: %s\n\tExpected: ");
-        Digest_print(expected);
-        printf("\n\tReceived: ");
-        Digest_print(digest);
-        print("\n\n")
-    }
-}
-
 u32 get_block_count(const u32 message_length) {
     u32 q = message_length / BLOCK_BYTES;
     u32 r = message_length % BLOCK_BYTES;

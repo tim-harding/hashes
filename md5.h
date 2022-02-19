@@ -1,12 +1,11 @@
+#ifndef MD5_H
+#define MD5_H
+
+#include <stdlib.h>
 #include <stdio.h>
-#include <stdint.h>
 #include <string.h>
 #include <stdbool.h>
-
-typedef uint8_t  u8;
-typedef uint16_t u16;
-typedef uint32_t u32;
-typedef uint64_t u64;
+#include "digest.h"
 
 // Question: Is the message length given in bits or bytes?
 
@@ -37,12 +36,6 @@ typedef struct PaddedMessage {
     Block_byte* blocks;
 } PaddedMessage;
 
-typedef struct Digest {
-    u32 a;
-    u32 b;
-    u32 c;
-    u32 d;
-} Digest;
 
 // Todo: Reduce this using modulus
 const u8 SHIFTS[] = {
@@ -74,5 +67,6 @@ const u32 SINES[] = {
 };
 
 Digest hash(const u8* message, const u32 message_length);
-bool Digest_equal(Digest left, Digest right);
 void test(char* message, const u32 message_length, Digest expected);
+
+#endif
