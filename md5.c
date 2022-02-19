@@ -31,8 +31,13 @@ typedef u8  Block_byte[BLOCK_BYTES];
 typedef u32 Block_u32 [BLOCK_U32S];
 typedef u64 Block_u64 [BLOCK_U64S];
 
+typedef struct PaddedMessage {
+    u32 block_count;
+    Block_byte* blocks;
+} PaddedMessage;
+
 // Todo: Reduce this using modulus
-const u32 SHIFT_AMOUNTS[] = {
+const u8 SHIFTS[] = {
     7, 12, 17, 22,  7, 12, 17, 22,  7, 12, 17, 22,  7, 12, 17, 22,
     5,  9, 14, 20,  5,  9, 14, 20,  5,  9, 14, 20,  5,  9, 14, 20,
     4, 11, 16, 23,  4, 11, 16, 23,  4, 11, 16, 23,  4, 11, 16, 23,
@@ -64,31 +69,6 @@ int main() {
 
 }
 
-// Message will be reallocated with padding for now.
-// Would it be better to add to the function contract
-// that the string allocation be padded in some way?
-void hash(const u8* message, const u32 message_length, u32 (*digest)[4]) {
-    // Constants are just some standard initial values.
-    // Can we find out how these were chosen?
-    u32 a0 = 0x67452301;
-    u32 b0 = 0xefcdab89;
-    u32 c0 = 0x98badcfe;
-    u32 d0 = 0x10325476;
-
-    u32 block_count = get_block_count(message_length);
-    Block_byte* blocks = malloc(block_count * sizeof(Block_byte));
-
-    strcpy(blocks, message);
-    ((char*) blocks)[message_length] = 0x80;
-    for (u32 i = message_length + 1, end = block_count * 64 - MESSAGE_LENGTH_BYTES; i < end; i++) {
-        ((char*) blocks)[i] = 0x00;
-    }
-
-    u64 message_length_in_bits = ((u64) message_length) * BITS_PER_BYTE;
-    Block_u64 last_block = blocks[block_count - 1];
-    last_block[BLOCK_U64S - 1] = message_length_in_bits;
-}
-
 u32 get_block_count(const u32 message_length) {
     u32 q = message_length / BLOCK_BYTES;
     u32 r = message_length % BLOCK_BYTES;
@@ -100,5 +80,61 @@ u32 get_block_count(const u32 message_length) {
     } else {
         // We need to add another block worth of space.
         return q + 1;
+    }
+}
+
+PaddedMessage message_to_blocks(const u8* message, const u32 message_length) {
+    u32 block_count = get_block_count(message_length);
+    Block_byte* blocks = malloc(block_count * sizeof(Block_byte));
+    u8* buffer = blocks;
+
+    strcpy(blocks, message);
+    buffer[message_length] = 0x80;
+    for (u32 i = message_length + 1, end = block_count * BLOCK_BYTES - MESSAGE_LENGTH_BYTES; i < end; i++) {
+        buffer[i] = 0x00;
+    }
+
+    u64 message_length_in_bits = ((u64) message_length) * BITS_PER_BYTE;
+    Block_u64 last_block = blocks[block_count - 1];
+    last_block[BLOCK_U64S - 1] = message_length_in_bits;
+
+    PaddedMessage out = {
+        .block_count = block_count,
+        .blocks = blocks,
+    };
+
+    return out;
+}
+
+u32 left_rotate(u32 n, u8 bits) {
+    return (n << bits) | (n >> (sizeof(u32) - bits));
+}
+
+// Message will be reallocated with padding for now.
+// Would it be better to add to the function contract
+// that the string allocation be padded in some way?
+void hash(const u8* message, const u32 message_length, u32 (*digest)[4]) {
+    PaddedMessage padded = message_to_blocks(message, message_length);
+
+    // Constants are just some standard initial values.
+    // TODO: Can we find out how these were chosen?
+    u32 a0 = 0x67452301;
+    u32 b0 = 0xefcdab89;
+    u32 c0 = 0x98badcfe;
+    u32 d0 = 0x10325476;
+
+    for (u32 block_i = 0; block_i < padded.block_count; block_i++) {
+        u32 a = a0;
+        u32 b = b0;
+        u32 c = c0;
+        u32 d = d0;
+        for (u32 i = 0; i < 16; i++) {
+            u32 f = (b & c) | ((~b) & d);
+            f += a + SINES[i] + SHIFTS[i];
+            a = d;
+            d = c;
+            c = b;
+            b += left_rotate(f, SHIFTS[block_i]);
+        }
     }
 }
