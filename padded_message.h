@@ -31,5 +31,6 @@ typedef struct PaddedMessage {
 PaddedMessage PaddedMessage_from_cstr(const char* message);
 void PaddedMessage_free(PaddedMessage* message);
 u32 PaddedMessage_length_in_bytes(PaddedMessage* message);
+void PaddedMessage_print_hex(PaddedMessage* message);
 
 #endif

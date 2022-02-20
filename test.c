@@ -34,12 +34,6 @@ int main() {
     test_padding(message5, expected5, sizeof(expected5) - 1);
 }
 
-void print_bytes(u8* bytes, u32 byte_count) {
-    for (u32 i = 0; i < byte_count; i++) {
-        printf("%02x", bytes[i]);
-    }
-}
-
 void test_padding(const char* message, const char* expected,
                   u32 expected_length) {
     PaddedMessage padded = PaddedMessage_from_cstr(message);
@@ -53,14 +47,15 @@ void test_padding(const char* message, const char* expected,
     }
 
     if (memcmp(padded.blocks, expected, expected_length) == 0) {
-        printf("Success: %s\n\n", expected);
+        printf("Success");
     } else {
-        printf("Failure: \n\tExpected: ");
-        print_bytes((u8*)expected, expected_length);
-        printf("\n\tReceived: ");
-        print_bytes((u8*)padded.blocks, padded.block_count * BLOCK_BYTES);
-        printf("\n\n");
+        printf("Failure");
     }
+    printf(": %s\n\tExpected: ", expected);
+    print_bytes((u8*)expected, expected_length);
+    printf("\n\tReceived: ");
+    PaddedMessage_print_hex(&padded);
+    printf("\n\n");
 }
 
 void test_digest(char* message, Digest expected) {

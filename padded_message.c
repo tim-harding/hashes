@@ -46,3 +46,9 @@ u32 PaddedMessage_length_in_bytes(PaddedMessage* message) {
 void PaddedMessage_free(PaddedMessage* message) {
     free(message->blocks);
 }
+
+void PaddedMessage_print_hex(PaddedMessage* message) {
+    for (u32 block_i = 0; block_i < message->blocks; block_i++) {
+        print_bytes(message->blocks[block_i], BLOCK_BYTES);
+    }
+}
