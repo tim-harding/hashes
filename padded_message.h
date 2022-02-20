@@ -6,14 +6,10 @@
 #include <stdlib.h>
 
 #define BITS_PER_BYTE 8
-// TODO: Possible removal of these constants
-#define BYTES_PER_U32 32 / BITS_PER_BYTE
-#define BYTES_PER_U64 64 / BITS_PER_BYTE
-
 #define BLOCK_BITS  512
-#define BLOCK_BYTES BLOCK_BITS  / BITS_PER_BYTE
-#define BLOCK_U32S  BLOCK_BYTES / BYTES_PER_U32
-#define BLOCK_U64S  BLOCK_BYTES / BYTES_PER_U64
+#define BLOCK_BYTES BLOCK_BITS / BITS_PER_BYTE
+#define BLOCK_U32S  BLOCK_BITS / 32
+#define BLOCK_U64S  BLOCK_BITS / 64
 
 // The message is postpended by a 64-bit number
 // that gives the original message length.

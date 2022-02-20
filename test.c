@@ -1,9 +1,14 @@
 #include "test.h"
 
 int main() {
-    if (sizeof(Block_u32) != 512 / 8) {
-        printf("Block_u32 is the wrong size\n\n");
-    }
+    debug(BITS_PER_BYTE);
+    debug(BLOCK_BITS);
+    debug(BLOCK_BYTES);
+    debug(BLOCK_U32S);
+    debug(BLOCK_U64S);
+    debug(sizeof(Block_byte));
+    debug(sizeof(Block_u32));
+    debug(sizeof(Block_u64));
 
     char* message1 = "The quick brown fox jumps over the lazy dog";
     Digest expected1 = {
