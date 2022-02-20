@@ -48,7 +48,7 @@ void PaddedMessage_free(PaddedMessage* message) {
 }
 
 void PaddedMessage_print_hex(PaddedMessage* message) {
-    for (u32 block_i = 0; block_i < message->blocks; block_i++) {
+    for (u32 block_i = 0; block_i < message->block_count; block_i++) {
         print_bytes(message->blocks[block_i], BLOCK_BYTES);
     }
 }

@@ -61,12 +61,13 @@ void test_padding(const char* message, const char* expected,
 void test_digest(char* message, Digest expected) {
     Digest digest = hash(message);
     if (Digest_equal(digest, expected)) {
-        printf("Success: %s\n\n", message);
+        printf("Success");
     } else {
-        printf("Failure\n\tExpected: ");
-        Digest_print(expected);
-        printf("\n\tReceived: ");
-        Digest_print(digest);
-        printf("\n\n");
+        printf("Failure");
     }
+    printf("\n\tExpected: ");
+    Digest_print(expected);
+    printf("\n\tReceived: ");
+    Digest_print(digest);
+    printf("\n\n");
 }
