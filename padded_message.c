@@ -17,7 +17,7 @@ u32 get_block_count(const u32 message_length) {
 PaddedMessage PaddedMessage_from_cstr(const char* message, const u32 message_length) {
     u32 block_count = get_block_count(message_length);
     Block_byte* blocks = malloc(block_count * sizeof(Block_byte));
-    char* buffer = blocks;
+    char* buffer = (char*) blocks;
 
     memcpy(blocks, message, message_length);
     // Append a single bit to the end of the message
@@ -27,8 +27,8 @@ PaddedMessage PaddedMessage_from_cstr(const char* message, const u32 message_len
     }
 
     u64 message_length_in_bits = ((u64) message_length) * BITS_PER_BYTE;
-    Block_u64 last_block = blocks[block_count - 1];
-    last_block[BLOCK_U64S - 1] = message_length_in_bits;
+    Block_u64* last_block = (Block_u64*) &blocks[block_count - 1];
+    (*last_block)[BLOCK_U64S - 1] = message_length_in_bits;
 
     PaddedMessage out = {
         .block_count = block_count,
