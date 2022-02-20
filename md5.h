@@ -6,36 +6,9 @@
 #include <string.h>
 #include <stdbool.h>
 #include "digest.h"
+#include "padded_message.h"
 
 // Question: Is the message length given in bits or bytes?
-
-#define BITS_PER_BYTE 8
-// TODO: Possible removal of these constants
-#define BYTES_PER_U32 32 / BITS_PER_BYTE
-#define BYTES_PER_U64 64 / BITS_PER_BYTE
-
-#define BLOCK_BITS  512
-#define BLOCK_BYTES BLOCK_BITS  / BITS_PER_BYTE
-#define BLOCK_U32S  BLOCK_BYTES / BYTES_PER_U32
-#define BLOCK_U64S  BLOCK_BYTES / BYTES_PER_U64
-
-// The message is postpended by a 64-bit number
-// that gives the original message length.
-#define MESSAGE_LENGTH_BYTES 8
-
-// The message must be postpended by 0x80,
-// which takes one byte.
-#define MINIMUM_PADDING_BYTES 1
-
-typedef u8  Block_byte[BLOCK_BYTES];
-typedef u32 Block_u32 [BLOCK_U32S];
-typedef u64 Block_u64 [BLOCK_U64S];
-
-typedef struct PaddedMessage {
-    u32 block_count;
-    Block_byte* blocks;
-} PaddedMessage;
-
 
 // Todo: Reduce this using modulus
 const u8 SHIFTS[] = {
@@ -66,7 +39,6 @@ const u32 SINES[] = {
     0xf7537e82, 0xbd3af235, 0x2ad7d2bb, 0xeb86d391,
 };
 
-Digest hash(const u8* message, const u32 message_length);
-void test(char* message, const u32 message_length, Digest expected);
+Digest hash(const char* message, const u32 message_length);
 
 #endif

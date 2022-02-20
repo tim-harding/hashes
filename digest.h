@@ -11,6 +11,7 @@ typedef struct Digest {
     u32 d;
 } Digest;
 
+void Digest_print(Digest digest);
 bool Digest_equal(Digest left, Digest right);
 
 #endif

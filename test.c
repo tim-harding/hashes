@@ -1,6 +1,10 @@
 #include "test.h"
 
 int main() {
+    if (sizeof(Block_u32) != 512 / 8) {
+        printf("Block_u32 is the wrong size\n\n");
+    }
+
     char* message1 = "The quick brown fox jumps over the lazy dog";
     Digest expected1 = {
         .a = 0x9e107d9d,
@@ -8,7 +12,7 @@ int main() {
         .c = 0x6bd81d35,
         .d = 0x42a419d6,
     };
-    test(message1, sizeof(message1), expected1);
+    test_digest(message1, sizeof(message1), expected1);
 
     char* message2 = "The quick brown fox jumps over the lazy dog.";
     Digest expected2 = {
@@ -17,7 +21,7 @@ int main() {
         .c = 0xa068ffad,
         .d = 0xdf22cbd0,
     };
-    test(message2, sizeof(message2), expected2);
+    test_digest(message2, sizeof(message2), expected2);
 
     char* message3 = "";
     Digest expected3 = {
@@ -26,18 +30,42 @@ int main() {
         .c = 0xe9800998,
         .d = 0xecf8427e,
     };
-    test(message3, sizeof(message3), expected3);
+    test_digest(message3, sizeof(message3), expected3);
+
+    char* message4 = "Hello";
+    // 0x28 = 5 * 8
+    char* expected4 = "Hello\x80\0\0\0\0\0\0\x28\00\00\00";
+    test_padding(message4, sizeof(message4), expected4, sizeof(expected4));
 }
 
-void test(char* message, const u32 message_length, Digest expected) {
+void test_padding(const char* message, const u32 message_length, const char* expected, const u32 expected_length) {
+    PaddedMessage padded = PaddedMessage_from_cstr(message, message_length);
+    u32 padded_length = PaddedMessage_length_in_bytes(&padded);
+    if (padded_length != expected_length) {
+        printf(
+            "The padded message was a different length from the expected message:\n\tExpected: %d\n\tReceived: %d\n\n",
+            expected_length,
+            padded_length
+        );
+        return;
+    }
+
+    if (memcmp(padded.blocks, expected, expected_length) == 0) {
+        printf("Success: %s\n\n", expected);
+    } else {
+        printf("Failure: %s\n\n", expected);
+    }
+}
+
+void test_digest(char* message, const u32 message_length, Digest expected) {
     Digest digest = hash(message, message_length);
     if (Digest_equal(digest, expected)) {
         printf("Success: %s\n\n", message);
     } else {
-        printf("Failure: %s\n\tExpected: ");
+        printf("Failure\n\tExpected: ");
         Digest_print(expected);
         printf("\n\tReceived: ");
         Digest_print(digest);
-        print("\n\n");
+        printf("\n\n");
     }
 }
