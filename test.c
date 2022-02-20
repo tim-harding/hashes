@@ -2,30 +2,18 @@
 
 int main() {
     char message1[] = "The quick brown fox jumps over the lazy dog";
-    Digest expected1 = {
-        .a = 0x9e107d9d,
-        .b = 0x372bb682,
-        .c = 0x6bd81d35,
-        .d = 0x42a419d6,
-    };
+    Digest expected1 =
+        Digest_from_be(0x9e107d9d, 0x372bb682, 0x6bd81d35, 0x42a419d6);
     test_digest(message1, expected1);
 
     char message2[] = "The quick brown fox jumps over the lazy dog.";
-    Digest expected2 = {
-        .a = 0xe4d909c2,
-        .b = 0x90d0fb1c,
-        .c = 0xa068ffad,
-        .d = 0xdf22cbd0,
-    };
+    Digest expected2 =
+        Digest_from_be(0xe4d909c2, 0x90d0fb1c, 0xa068ffad, 0xdf22cbd0);
     test_digest(message2, expected2);
 
     char message3[] = "";
-    Digest expected3 = {
-        .a = 0xd41d8cd9,
-        .b = 0x8f00b204,
-        .c = 0xe9800998,
-        .d = 0xecf8427e,
-    };
+    Digest expected3 =
+        Digest_from_be(0xd41d8cd9, 0x8f00b204, 0xe9800998, 0xecf8427e);
     test_digest(message3, expected3);
 
     char message4[] = "Hello";
@@ -34,7 +22,7 @@ int main() {
         "Hello\x80"
         "\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0"
         "\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0"
-        "\x28\0\0\0\0\0\0\0"; // The length is little-endian
+        "\x28\0\0\0\0\0\0\0";  // The length is little-endian
     test_padding(message4, expected4, sizeof(expected4) - 1);
 
     char message5[] = "";
@@ -52,7 +40,8 @@ void print_bytes(u8* bytes, u32 byte_count) {
     }
 }
 
-void test_padding(const char* message, const char* expected, u32 expected_length) {
+void test_padding(const char* message, const char* expected,
+                  u32 expected_length) {
     PaddedMessage padded = PaddedMessage_from_cstr(message);
     u32 padded_length = PaddedMessage_length_in_bytes(&padded);
     if (padded_length != expected_length) {
