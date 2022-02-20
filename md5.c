@@ -34,7 +34,6 @@ Digest hash(const char* message) {
         u32 c = c0;
         u32 d = d0;
 
-/*
         for (u32 i = 0; i < 64; i++) {
             u32 f, g;
             if (i < 16) {
@@ -50,32 +49,37 @@ Digest hash(const char* message) {
                 f = c ^ (b | ~d);
                 g = (7 * i) % 16;
             }
-        }
-        */
 
-        for (u32 i = 0; i < 16; i++) {
-            u32 f = (b & c) | (~b & d);
-            u32 g = i;
-            shuffle(block, &a, &b, &c, &d, i, f, g);
-        }
-
-        for (u32 i = 16; i < 32; i++) {
-            u32 f = (d & b) | (~d & c);
-            u32 g = (5 * i + 1) % 16;
-            shuffle(block, &a, &b, &c, &d, i, f, g);
+            f += a + SINES[i] + (*block)[g];
+            a = d;
+            d = c;
+            c = b;
+            b += rotate_left(f, SHIFTS[i]);
         }
 
-        for (u32 i = 32; i < 48; i++) {
-            u32 f = b ^ c ^ d;
-            u32 g = (3 * i + 5) % 16;
-            shuffle(block, &a, &b, &c, &d, i, f, g);
-        }
+        // for (u32 i = 0; i < 16; i++) {
+        //     u32 f = (b & c) | (~b & d);
+        //     u32 g = i;
+        //     shuffle(block, &a, &b, &c, &d, i, f, g);
+        // }
 
-        for (u32 i = 48; i < 64; i++) {
-            u32 f = c ^ (b | ~d);
-            u32 g = (7 * i) % 16;
-            shuffle(block, &a, &b, &c, &d, i, f, g);
-        }
+        // for (u32 i = 16; i < 32; i++) {
+        //     u32 f = (d & b) | (~d & c);
+        //     u32 g = (5 * i + 1) % 16;
+        //     shuffle(block, &a, &b, &c, &d, i, f, g);
+        // }
+
+        // for (u32 i = 32; i < 48; i++) {
+        //     u32 f = b ^ c ^ d;
+        //     u32 g = (3 * i + 5) % 16;
+        //     shuffle(block, &a, &b, &c, &d, i, f, g);
+        // }
+
+        // for (u32 i = 48; i < 64; i++) {
+        //     u32 f = c ^ (b | ~d);
+        //     u32 g = (7 * i) % 16;
+        //     shuffle(block, &a, &b, &c, &d, i, f, g);
+        // }
 
         a0 += a;
         b0 += b;
