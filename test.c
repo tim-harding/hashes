@@ -1,16 +1,7 @@
 #include "test.h"
 
 int main() {
-    debug(BITS_PER_BYTE);
-    debug(BLOCK_BITS);
-    debug(BLOCK_BYTES);
-    debug(BLOCK_U32S);
-    debug(BLOCK_U64S);
-    debug(sizeof(Block_byte));
-    debug(sizeof(Block_u32));
-    debug(sizeof(Block_u64));
-
-    char* message1 = "The quick brown fox jumps over the lazy dog";
+    char message1[] = "The quick brown fox jumps over the lazy dog";
     Digest expected1 = {
         .a = 0x9e107d9d,
         .b = 0x372bb682,
@@ -19,7 +10,7 @@ int main() {
     };
     test_digest(message1, sizeof(message1), expected1);
 
-    char* message2 = "The quick brown fox jumps over the lazy dog.";
+    char message2[] = "The quick brown fox jumps over the lazy dog.";
     Digest expected2 = {
         .a = 0xe4d909c2,
         .b = 0x90d0fb1c,
@@ -28,7 +19,7 @@ int main() {
     };
     test_digest(message2, sizeof(message2), expected2);
 
-    char* message3 = "";
+    char message3[] = "";
     Digest expected3 = {
         .a = 0xd41d8cd9,
         .b = 0x8f00b204,
@@ -37,9 +28,9 @@ int main() {
     };
     test_digest(message3, sizeof(message3), expected3);
 
-    char* message4 = "Hello";
+    char message4[] = "Hello";
     // 0x28 = 5 * 8
-    char* expected4 = "Hello\x80\0\0\0\0\0\0\x28\00\00\00";
+    char expected4[] = "Hello\x80\0\0\0\0\0\0\x28\00\00\00";
     test_padding(message4, sizeof(message4), expected4, sizeof(expected4));
 }
 

@@ -1,7 +1,7 @@
 #include "padded_message.h"
 
 u32 get_block_count(const u32 message_length) {
-    u32 q = message_length / BLOCK_BYTES;
+    u32 q = message_length / BLOCK_BYTES + 1;
     u32 r = message_length % BLOCK_BYTES;
     // The last block needs 9 bytes available
     // for padding and to store the message length.
