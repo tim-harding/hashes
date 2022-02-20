@@ -1,14 +1,14 @@
 #include "md5.h"
 
 u32 rotate_left(u32 n, u8 bits) {
-    return (n << bits) | (n >> (sizeof(u32) - bits));
+    return (n << bits) | (n >> (32 - bits));
 }
 
-void shuffle(u32* a, u32* b, u32* c, u32* d, u32 i, u32 f, u32 g) {
+void shuffle(Block_u32* block, u32* a, u32* b, u32* c, u32* d, u32 i, u32 f, u32 g) {
     *a = *d;
     *d = *c;
     *c = *b;
-    *b += rotate_left(f + *a + SINES[i] + SHIFTS[g], SHIFTS[i]);
+    *b += rotate_left(f + *a + SINES[i] + (*block)[g], SHIFTS[i]);
 }
 
 // Message will be reallocated with padding for now.
@@ -25,6 +25,8 @@ Digest hash(const char* message) {
     u32 d0 = 0x10325476;
 
     for (u32 block_i = 0; block_i < padded.block_count; block_i++) {
+        Block_u32* block = (Block_u32*) padded.blocks[block_i];
+
         u32 a = a0;
         u32 b = b0;
         u32 c = c0;
@@ -33,25 +35,25 @@ Digest hash(const char* message) {
         for (u32 i = 0; i < 16; i++) {
             u32 f = (b & c) | ((~b) & d);
             u32 g = i;
-            shuffle(&a, &b, &c, &d, i, f, g);
+            shuffle(block, &a, &b, &c, &d, i, f, g);
         }
 
         for (u32 i = 16; i < 32; i++) {
             u32 f = (d & b) | (~d & c);
             u32 g = (5 * i + 1) % 16;
-            shuffle(&a, &b, &c, &d, i, f, g);
+            shuffle(block, &a, &b, &c, &d, i, f, g);
         }
 
         for (u32 i = 32; i < 48; i++) {
             u32 f = b ^ c ^ d;
             u32 g = (3 * i + 5) % 16;
-            shuffle(&a, &b, &c, &d, i, f, g);
+            shuffle(block, &a, &b, &c, &d, i, f, g);
         }
 
         for (u32 i = 48; i < 64; i++) {
             u32 f = c ^ (b | ~d);
             u32 g = (7 * i) % 16;
-            shuffle(&a, &b, &c, &d, i, f, g);
+            shuffle(block, &a, &b, &c, &d, i, f, g);
         }
 
         a0 += a;
