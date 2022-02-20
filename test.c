@@ -36,6 +36,14 @@ int main() {
         "\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0"
         "\x28\0\0\0\0\0\0\0"; // The length is little-endian
     test_padding(message4, expected4, sizeof(expected4) - 1);
+
+    char message5[] = "";
+    char expected5[] =
+        "\x80\0\0\0\0\0"
+        "\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0"
+        "\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0"
+        "\0\0\0\0\0\0\0\0";
+    test_padding(message5, expected5, sizeof(expected5) - 1);
 }
 
 void print_bytes(u8* bytes, u32 byte_count) {

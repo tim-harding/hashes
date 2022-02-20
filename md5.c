@@ -1,5 +1,7 @@
 #include "md5.h"
 
+// https://datatracker.ietf.org/doc/html/rfc1321
+
 u32 rotate_left(u32 n, u8 bits) {
     return (n << bits) | (n >> (32 - bits));
 }
@@ -17,8 +19,7 @@ void shuffle(Block_u32* block, u32* a, u32* b, u32* c, u32* d, u32 i, u32 f, u32
 Digest hash(const char* message) {
     PaddedMessage padded = PaddedMessage_from_cstr(message);
 
-    // Constants are just some standard initial values.
-    // TODO: Can we find out how these were chosen?
+    // When written in little-endian, these just count up and down
     u32 a0 = 0x67452301;
     u32 b0 = 0xefcdab89;
     u32 c0 = 0x98badcfe;
@@ -33,7 +34,7 @@ Digest hash(const char* message) {
         u32 d = d0;
 
         for (u32 i = 0; i < 16; i++) {
-            u32 f = (b & c) | ((~b) & d);
+            u32 f = (b & c) | (~b & d);
             u32 g = i;
             shuffle(block, &a, &b, &c, &d, i, f, g);
         }
@@ -61,6 +62,8 @@ Digest hash(const char* message) {
         c0 += c;
         d0 += d;
     }
+
+    PaddedMessage_free(&padded);
 
     Digest digest = {
         .a = a0,
