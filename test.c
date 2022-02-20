@@ -30,26 +30,40 @@ int main() {
 
     char message4[] = "Hello";
     // 0x28 = 5 * 8
-    char expected4[] = "Hello\x80\0\0\0\0\0\0\x28\00\00\00";
-    test_padding(message4, sizeof(message4), expected4, sizeof(expected4));
+    char expected4[] =
+        "Hello\x80"
+        "\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0"
+        "\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0"
+        "\x28\00\00\00";
+    test_padding(message4, sizeof(message4), expected4, sizeof(expected4) - 1);
 }
 
-void test_padding(const char* message, const u32 message_length, const char* expected, const u32 expected_length) {
+void print_bytes(u8* bytes, u32 byte_count) {
+    for (u32 i = 0; i < byte_count; i++) {
+        printf("%x", bytes[i]);
+    }
+}
+
+void test_padding(const char* message, const u32 message_length,
+                  const char* expected, const u32 expected_length) {
     PaddedMessage padded = PaddedMessage_from_cstr(message, message_length);
     u32 padded_length = PaddedMessage_length_in_bytes(&padded);
     if (padded_length != expected_length) {
         printf(
-            "The padded message was a different length from the expected message:\n\tExpected: %d\n\tReceived: %d\n\n",
-            expected_length,
-            padded_length
-        );
+            "The padded message was a different length from the expected "
+            "message:\n\tExpected: %d\n\tReceived: %d\n\n",
+            expected_length, padded_length);
         return;
     }
 
     if (memcmp(padded.blocks, expected, expected_length) == 0) {
         printf("Success: %s\n\n", expected);
     } else {
-        printf("Failure: %s\n\n", expected);
+        printf("Failure: \n\tExpected: ");
+        print_bytes((u8*) expected, expected_length);
+        printf("\n\tReceived: ");
+        print_bytes((u8*) padded.blocks, padded.block_count * BLOCK_BYTES);
+        printf("\n\n");
     }
 }
 
