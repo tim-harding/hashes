@@ -39,6 +39,6 @@ const u32 SINES[] = {
     0xf7537e82, 0xbd3af235, 0x2ad7d2bb, 0xeb86d391,
 };
 
-Digest hash(const char* message, const u32 message_length);
+Digest hash(const char* message);
 
 #endif

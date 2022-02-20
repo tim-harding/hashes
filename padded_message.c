@@ -14,7 +14,8 @@ u32 get_block_count(const u32 message_length) {
     }
 }
 
-PaddedMessage PaddedMessage_from_cstr(const char* message, const u32 message_length) {
+PaddedMessage PaddedMessage_from_cstr(const char* message) {
+    u32 message_length = strlen(message);
     u32 block_count = get_block_count(message_length);
     Block_byte* blocks = malloc(block_count * sizeof(Block_byte));
     char* buffer = (char*) blocks;

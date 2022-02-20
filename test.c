@@ -8,7 +8,7 @@ int main() {
         .c = 0x6bd81d35,
         .d = 0x42a419d6,
     };
-    test_digest(message1, sizeof(message1), expected1);
+    test_digest(message1, expected1);
 
     char message2[] = "The quick brown fox jumps over the lazy dog.";
     Digest expected2 = {
@@ -17,7 +17,7 @@ int main() {
         .c = 0xa068ffad,
         .d = 0xdf22cbd0,
     };
-    test_digest(message2, sizeof(message2), expected2);
+    test_digest(message2, expected2);
 
     char message3[] = "";
     Digest expected3 = {
@@ -26,27 +26,26 @@ int main() {
         .c = 0xe9800998,
         .d = 0xecf8427e,
     };
-    test_digest(message3, sizeof(message3), expected3);
+    test_digest(message3, expected3);
 
     char message4[] = "Hello";
     // 0x28 = 5 * 8
     char expected4[] =
         "Hello\x80"
         "\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0"
-        "\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0"
-        "\x28\00\00\00";
-    test_padding(message4, sizeof(message4), expected4, sizeof(expected4) - 1);
+        "\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0"
+        "\x28\0\0\0\0\0\0\0"; // The length is little-endian
+    test_padding(message4, expected4, sizeof(expected4) - 1);
 }
 
 void print_bytes(u8* bytes, u32 byte_count) {
     for (u32 i = 0; i < byte_count; i++) {
-        printf("%x", bytes[i]);
+        printf("%02x", bytes[i]);
     }
 }
 
-void test_padding(const char* message, const u32 message_length,
-                  const char* expected, const u32 expected_length) {
-    PaddedMessage padded = PaddedMessage_from_cstr(message, message_length);
+void test_padding(const char* message, const char* expected, u32 expected_length) {
+    PaddedMessage padded = PaddedMessage_from_cstr(message);
     u32 padded_length = PaddedMessage_length_in_bytes(&padded);
     if (padded_length != expected_length) {
         printf(
@@ -60,15 +59,15 @@ void test_padding(const char* message, const u32 message_length,
         printf("Success: %s\n\n", expected);
     } else {
         printf("Failure: \n\tExpected: ");
-        print_bytes((u8*) expected, expected_length);
+        print_bytes((u8*)expected, expected_length);
         printf("\n\tReceived: ");
-        print_bytes((u8*) padded.blocks, padded.block_count * BLOCK_BYTES);
+        print_bytes((u8*)padded.blocks, padded.block_count * BLOCK_BYTES);
         printf("\n\n");
     }
 }
 
-void test_digest(char* message, const u32 message_length, Digest expected) {
-    Digest digest = hash(message, message_length);
+void test_digest(char* message, Digest expected) {
+    Digest digest = hash(message);
     if (Digest_equal(digest, expected)) {
         printf("Success: %s\n\n", message);
     } else {

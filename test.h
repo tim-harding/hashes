@@ -6,7 +6,7 @@
 #include "digest.h"
 #include "th_stdlib.h"
 
-void test_padding(const char* message, const u32 message_length, const char* expected, const u32 expected_length);
-void test_digest(char* message, const u32 message_length, Digest expected);
+void test_padding(const char* message, const char* expected, u32 expected_length);
+void test_digest(char* message, Digest expected);
 
 #endif

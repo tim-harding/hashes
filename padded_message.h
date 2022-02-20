@@ -28,7 +28,7 @@ typedef struct PaddedMessage {
     Block_byte* blocks;
 } PaddedMessage;
 
-PaddedMessage PaddedMessage_from_cstr(const char* message, const u32 message_length);
+PaddedMessage PaddedMessage_from_cstr(const char* message);
 void PaddedMessage_free(PaddedMessage* message);
 u32 PaddedMessage_length_in_bytes(PaddedMessage* message);
 

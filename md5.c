@@ -14,8 +14,8 @@ void shuffle(u32* a, u32* b, u32* c, u32* d, u32 i, u32 f, u32 g) {
 // Message will be reallocated with padding for now.
 // Would it be better to add to the function contract
 // that the string allocation be padded in some way?
-Digest hash(const char* message, const u32 message_length) {
-    PaddedMessage padded = PaddedMessage_from_cstr(message, message_length);
+Digest hash(const char* message) {
+    PaddedMessage padded = PaddedMessage_from_cstr(message);
 
     // Constants are just some standard initial values.
     // TODO: Can we find out how these were chosen?
