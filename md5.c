@@ -7,10 +7,11 @@ u32 rotate_left(u32 n, u8 bits) {
 }
 
 void shuffle(Block_u32* block, u32* a, u32* b, u32* c, u32* d, u32 i, u32 f, u32 g) {
+    f += *a + SINES[i] + (*block)[g];
     *a = *d;
     *d = *c;
     *c = *b;
-    *b += rotate_left(f + *a + SINES[i] + (*block)[g], SHIFTS[i]);
+    *b += rotate_left(f, SHIFTS[i]);
 }
 
 // Message will be reallocated with padding for now.
@@ -32,6 +33,25 @@ Digest hash(const char* message) {
         u32 b = b0;
         u32 c = c0;
         u32 d = d0;
+
+/*
+        for (u32 i = 0; i < 64; i++) {
+            u32 f, g;
+            if (i < 16) {
+                f = (b & c) | (~b & d);
+                g = i;
+            } else if (i < 32) {
+                f = (d & b) | (~d & c);
+                g = (5 * i + 1) % 16;
+            } else if (i < 48) {
+                f = b ^ c ^ d;
+                g = (3 * i + 5) % 16;
+            } else {
+                f = c ^ (b | ~d);
+                g = (7 * i) % 16;
+            }
+        }
+        */
 
         for (u32 i = 0; i < 16; i++) {
             u32 f = (b & c) | (~b & d);
