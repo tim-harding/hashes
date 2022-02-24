@@ -6,8 +6,8 @@ u32 rotate_left(u32 n, u8 bits) {
     return (n << bits) | (n >> (32 - bits));
 }
 
-void shuffle(Block_u32* block, u32* a, u32* b, u32* c, u32* d, u32 i, u32 f, u32 g) {
-    f += *a + SINES[i] + (*block)[g];
+void shuffle(Block* block, u32* a, u32* b, u32* c, u32* d, u32 i, u32 f, u32 g) {
+    f += *a + SINES[i] + block->word[g];
     *a = *d;
     *d = *c;
     *c = *b;
@@ -29,7 +29,7 @@ Digest hash(const char* message) {
     };
 
     for (u32 block_i = 0; block_i < padded.block_count; block_i++) {
-        Block_u32* block = (Block_u32*) padded.blocks[block_i];
+        Block* block = &padded.blocks[block_i];
 
         u32 a = digest.a;
         u32 b = digest.b;

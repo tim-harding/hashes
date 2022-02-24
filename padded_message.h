@@ -19,13 +19,15 @@
 // which takes one byte.
 #define MINIMUM_PADDING_BYTES 1
 
-typedef u8  Block_byte[BLOCK_BYTES];
-typedef u32 Block_u32 [BLOCK_U32S];
-typedef u64 Block_u64 [BLOCK_U64S];
+typedef union Block {
+    u8 byte[BLOCK_BYTES];
+    u32 word[BLOCK_U32S];
+    u64 long_word[BLOCK_U64S];
+} Block;
 
 typedef struct PaddedMessage {
     u32 block_count;
-    Block_byte* blocks;
+    Block* blocks;
 } PaddedMessage;
 
 PaddedMessage PaddedMessage_from_cstr(const char* message);
