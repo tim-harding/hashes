@@ -21,18 +21,20 @@ Digest hash(const char* message) {
     PaddedMessage padded = PaddedMessage_from_cstr(message);
 
     // When written in little-endian, these just count up and down
-    u32 a0 = 0x67452301;
-    u32 b0 = 0xefcdab89;
-    u32 c0 = 0x98badcfe;
-    u32 d0 = 0x10325476;
+    Digest digest = {
+        .a = 0x67452301,
+        .b = 0xefcdab89,
+        .c = 0x98badcfe,
+        .d = 0x10325476,
+    };
 
     for (u32 block_i = 0; block_i < padded.block_count; block_i++) {
         Block_u32* block = (Block_u32*) padded.blocks[block_i];
 
-        u32 a = a0;
-        u32 b = b0;
-        u32 c = c0;
-        u32 d = d0;
+        u32 a = digest.a;
+        u32 b = digest.b;
+        u32 c = digest.c;
+        u32 d = digest.d;
 
         for (u32 i = 0; i < 16; i++) {
             u32 f = (b & c) | (~b & d);
@@ -58,19 +60,13 @@ Digest hash(const char* message) {
             shuffle(block, &a, &b, &c, &d, i, f, g);
         }
 
-        a0 += a;
-        b0 += b;
-        c0 += c;
-        d0 += d;
+        digest.a += a;
+        digest.b += b;
+        digest.c += c;
+        digest.d += d;
     }
 
     PaddedMessage_free(&padded);
 
-    Digest digest = {
-        .a = a0,
-        .b = b0,
-        .c = c0,
-        .d = d0,
-    };
     return digest;
 }
