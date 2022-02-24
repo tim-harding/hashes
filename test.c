@@ -16,47 +16,47 @@ int main() {
         Digest_from_be(0xd41d8cd9, 0x8f00b204, 0xe9800998, 0xecf8427e);
     test_digest(message3, expected3);
 
-    char message4[] = "Hello";
-    // 0x28 = 5 * 8
-    char expected4[] =
-        "Hello\x80"
-        "\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0"
-        "\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0"
-        "\x28\0\0\0\0\0\0\0";  // The length is little-endian
-    test_padding(message4, expected4, sizeof(expected4) - 1);
+    // char message4[] = "Hello";
+    // // 0x28 = 5 * 8
+    // char expected4[] =
+    //     "Hello\x80"
+    //     "\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0"
+    //     "\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0"
+    //     "\x28\0\0\0\0\0\0\0";  // The length is little-endian
+    // test_padding(message4, expected4, sizeof(expected4) - 1);
 
-    char message5[] = "";
-    char expected5[] =
-        "\x80\0\0\0\0\0"
-        "\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0"
-        "\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0"
-        "\0\0\0\0\0\0\0\0";
-    test_padding(message5, expected5, sizeof(expected5) - 1);
+    // char message5[] = "";
+    // char expected5[] =
+    //     "\x80\0\0\0\0\0"
+    //     "\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0"
+    //     "\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0"
+    //     "\0\0\0\0\0\0\0\0";
+    // test_padding(message5, expected5, sizeof(expected5) - 1);
 }
 
-void test_padding(const char* message, const char* expected,
-                  u32 expected_length) {
-    PaddedMessage padded = PaddedMessage_from_cstr(message);
-    u32 padded_length = PaddedMessage_length_in_bytes(&padded);
-    if (padded_length != expected_length) {
-        printf(
-            "The padded message was a different length from the expected "
-            "message:\n\tExpected: %d\n\tReceived: %d\n\n",
-            expected_length, padded_length);
-        return;
-    }
+// void test_padding(const char* message, const char* expected,
+//                   u32 expected_length) {
+//     PaddedMessage padded = PaddedMessage_from_cstr(message);
+//     u32 padded_length = PaddedMessage_length_in_bytes(&padded);
+//     if (padded_length != expected_length) {
+//         printf(
+//             "The padded message was a different length from the expected "
+//             "message:\n\tExpected: %d\n\tReceived: %d\n\n",
+//             expected_length, padded_length);
+//         return;
+//     }
 
-    if (memcmp(padded.blocks, expected, expected_length) == 0) {
-        printf("Success");
-    } else {
-        printf("Failure");
-    }
-    printf(": %s\n\tExpected: ", expected);
-    print_bytes((u8*)expected, expected_length);
-    printf("\n\tReceived: ");
-    PaddedMessage_print_hex(&padded);
-    printf("\n\n");
-}
+//     if (memcmp(padded.blocks, expected, expected_length) == 0) {
+//         printf("Success");
+//     } else {
+//         printf("Failure");
+//     }
+//     printf(": %s\n\tExpected: ", expected);
+//     print_bytes((u8*)expected, expected_length);
+//     printf("\n\tReceived: ");
+//     PaddedMessage_print_hex(&padded);
+//     printf("\n\n");
+// }
 
 void test_digest(char* message, Digest expected) {
     Digest digest = hash(message);
