@@ -2,9 +2,7 @@
 
 // https://datatracker.ietf.org/doc/html/rfc1321
 
-u32 rotate_left(u32 n, u8 bits) {
-    return (n << bits) | (n >> (32 - bits));
-}
+u32 rotate_left(u32 n, u8 bits) { return (n << bits) | (n >> (32 - bits)); }
 
 Digest shuffle(Block* block, Digest digest, u32 i, u32 f, u32 g) {
     f += digest.a + SINES[i] + block->word[g];
@@ -12,6 +10,41 @@ Digest shuffle(Block* block, Digest digest, u32 i, u32 f, u32 g) {
     digest.d = digest.c;
     digest.c = digest.b;
     digest.b += rotate_left(f, SHIFTS[i]);
+    return digest;
+}
+
+Digest contribute_block(Block* block, Digest digest) {
+    Digest inner = digest;
+
+    for (u32 i = 0; i < 16; i++) {
+        u32 f = (inner.b & inner.c) | (~inner.b & inner.d);
+        u32 g = i;
+        inner = shuffle(block, inner, i, f, g);
+    }
+
+    for (u32 i = 16; i < 32; i++) {
+        u32 f = (inner.d & inner.b) | (~inner.d & inner.c);
+        u32 g = (5 * i + 1) % 16;
+        inner = shuffle(block, inner, i, f, g);
+    }
+
+    for (u32 i = 32; i < 48; i++) {
+        u32 f = inner.b ^ inner.c ^ inner.d;
+        u32 g = (3 * i + 5) % 16;
+        inner = shuffle(block, inner, i, f, g);
+    }
+
+    for (u32 i = 48; i < 64; i++) {
+        u32 f = inner.c ^ (inner.b | ~inner.d);
+        u32 g = (7 * i) % 16;
+        inner = shuffle(block, inner, i, f, g);
+    }
+
+    digest.a += inner.a;
+    digest.b += inner.b;
+    digest.c += inner.c;
+    digest.d += inner.d;
+
     return digest;
 }
 
@@ -30,38 +63,7 @@ Digest hash(const char* message) {
     };
 
     for (u32 block_i = 0; block_i < padded.block_count; block_i++) {
-        Block* block = &padded.blocks[block_i];
-
-        Digest inner = digest;
-
-        for (u32 i = 0; i < 16; i++) {
-            u32 f = (inner.b & inner.c) | (~inner.b & inner.d);
-            u32 g = i;
-            inner = shuffle(block, inner, i, f, g);
-        }
-
-        for (u32 i = 16; i < 32; i++) {
-            u32 f = (inner.d & inner.b) | (~inner.d & inner.c);
-            u32 g = (5 * i + 1) % 16;
-            inner = shuffle(block, inner, i, f, g);
-        }
-
-        for (u32 i = 32; i < 48; i++) {
-            u32 f = inner.b ^ inner.c ^ inner.d;
-            u32 g = (3 * i + 5) % 16;
-            inner = shuffle(block, inner, i, f, g);
-        }
-
-        for (u32 i = 48; i < 64; i++) {
-            u32 f = inner.c ^ (inner.b | ~inner.d);
-            u32 g = (7 * i) % 16;
-            inner = shuffle(block, inner, i, f, g);
-        }
-
-        digest.a += inner.a;
-        digest.b += inner.b;
-        digest.c += inner.c;
-        digest.d += inner.d;
+        digest = contribute_block(&padded.blocks[block_i], digest);
     }
 
     PaddedMessage_free(&padded);
