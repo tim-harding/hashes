@@ -52,6 +52,7 @@ Digest contribute_block(Block* block, Digest digest) {
 // Would it be better to add to the function contract
 // that the string allocation be padded in some way?
 Digest hash(const char* message) {
+    Block* blocks = (Block*) message;
     PaddedMessage padded = PaddedMessage_from_cstr(message);
 
     // When written in little-endian, these just count up and down
@@ -62,8 +63,13 @@ Digest hash(const char* message) {
         .d = 0x10325476,
     };
 
-    for (u32 block_i = 0; block_i < padded.block_count; block_i++) {
-        digest = contribute_block(&padded.blocks[block_i], digest);
+    for (u32 block_i = 0; block_i < padded.block_count - 1; block_i++) {
+        digest = contribute_block(&blocks[block_i], digest);
+    }
+
+    {
+        digest =
+            contribute_block(&padded.blocks[padded.block_count - 1], digest);
     }
 
     PaddedMessage_free(&padded);
