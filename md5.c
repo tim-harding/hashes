@@ -65,19 +65,16 @@ Digest hash(const char* message) {
         digest = contribute_block(&blocks[block_i], digest);
     }
 
-    // Factor this into a function instead
-    {
-        Block block;
-        memset(&block.byte, 0, BLOCK_BYTES);
-        memcpy(&block.byte, &blocks[whole_block_count].byte, last_block_remainder);
-        block.byte[last_block_remainder] = 0x80;
-        if (last_block_remainder > FINAL_BLOCK_MESSAGE_BYTES) {
-            digest = contribute_block(&block, digest);
-            memset(&block.byte, 0, BLOCK_BYTES);
-        }
-        block.long_word[BLOCK_U64S - 1] = message_length * BITS_PER_BYTE;
-        digest = contribute_block(&block, digest);
+    Block padded_block;
+    memset(&padded_block.byte, 0, BLOCK_BYTES);
+    memcpy(&padded_block.byte, &blocks[whole_block_count].byte, last_block_remainder);
+    padded_block.byte[last_block_remainder] = 0x80;
+    if (last_block_remainder > FINAL_BLOCK_MESSAGE_BYTES) {
+        digest = contribute_block(&padded_block, digest);
+        memset(&padded_block.byte, 0, BLOCK_BYTES);
     }
+    padded_block.long_word[BLOCK_U64S - 1] = message_length * BITS_PER_BYTE;
+    digest = contribute_block(&padded_block, digest);
 
     return digest;
 }
