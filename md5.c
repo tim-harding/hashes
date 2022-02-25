@@ -44,7 +44,15 @@ Digest contribute_block(Block* block, Digest digest) {
     return Digest_sum(digest, inner);
 }
 
+
+void compute_sines(u32 sines[BLOCK_BYTES]) {
+    for (u32 i = 0; i < BLOCK_BYTES; i++) {
+        sines[i] = floor(SINE_MULTIPLICAND * fabs(sin(i + 1)));
+    }
+}
+
 Digest hash(const char* message) {
+    compute_sines(SINES);
     Block* blocks = (Block*)message;
     u32 message_length = strlen(message);
     u32 whole_block_count = message_length / BLOCK_BYTES;
