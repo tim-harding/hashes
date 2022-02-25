@@ -9,7 +9,8 @@ Digest shuffle(Block* block, Digest digest, u32 i, u32 f, u32 g) {
     digest.a = digest.d;
     digest.d = digest.c;
     digest.c = digest.b;
-    digest.b += rotate_left(f, SHIFTS[i]);
+    u32 shifts_index = (i / 16) * 4 + (i % 4);
+    digest.b += rotate_left(f, SHIFTS[shifts_index]);
     return digest;
 }
 
