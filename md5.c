@@ -41,12 +41,7 @@ Digest contribute_block(Block* block, Digest digest) {
         inner = shuffle(block, inner, i, f, g);
     }
 
-    digest.a += inner.a;
-    digest.b += inner.b;
-    digest.c += inner.c;
-    digest.d += inner.d;
-
-    return digest;
+    return Digest_sum(digest, inner);
 }
 
 Digest hash(const char* message) {

@@ -44,3 +44,13 @@ void Digest_print(Digest digest) {
     print_le(digest.c);
     print_le(digest.b);
 }
+
+Digest Digest_sum(Digest left, Digest right) {
+    Digest out = {
+        .a = left.a + right.a,
+        .b = left.b + right.b,
+        .c = left.c + right.c,
+        .d = left.d + right.d,
+    };
+    return out;
+}
