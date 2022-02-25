@@ -7,6 +7,7 @@
 #include <stdbool.h>
 #include "digest.h"
 #include "padded_message.h"
+#include "th_stdlib.h"
 
 // Question: Is the message length given in bits or bytes?
 

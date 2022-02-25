@@ -48,14 +48,12 @@ Digest contribute_block(Block* block, Digest digest) {
     return digest;
 }
 
-// Message will be reallocated with padding for now.
-// Would it be better to add to the function contract
-// that the string allocation be padded in some way?
 Digest hash(const char* message) {
-    Block* blocks = (Block*) message;
-    PaddedMessage padded = PaddedMessage_from_cstr(message);
+    Block* blocks = (Block*)message;
+    u32 message_length = strlen(message);
+    u32 whole_block_count = message_length / BLOCK_BYTES;
+    u32 last_block_remainder = message_length % BLOCK_BYTES;
 
-    // When written in little-endian, these just count up and down
     Digest digest = {
         .a = 0x67452301,
         .b = 0xefcdab89,
@@ -63,16 +61,23 @@ Digest hash(const char* message) {
         .d = 0x10325476,
     };
 
-    for (u32 block_i = 0; block_i < padded.block_count - 1; block_i++) {
+    for (u32 block_i = 0; block_i < whole_block_count; block_i++) {
         digest = contribute_block(&blocks[block_i], digest);
     }
 
+    // Factor this into a function instead
     {
-        digest =
-            contribute_block(&padded.blocks[padded.block_count - 1], digest);
+        Block block;
+        memset(&block.byte, 0, BLOCK_BYTES);
+        memcpy(&block.byte, &blocks[whole_block_count].byte, last_block_remainder);
+        block.byte[last_block_remainder] = 0x80;
+        if (last_block_remainder > FINAL_BLOCK_MESSAGE_BYTES) {
+            digest = contribute_block(&block, digest);
+            memset(&block.byte, 0, BLOCK_BYTES);
+        }
+        block.long_word[BLOCK_U64S - 1] = message_length * BITS_PER_BYTE;
+        digest = contribute_block(&block, digest);
     }
-
-    PaddedMessage_free(&padded);
 
     return digest;
 }
