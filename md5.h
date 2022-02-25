@@ -5,8 +5,8 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdbool.h>
-#include "th_stdlib.h"
 #include "digest.h"
+#include "th_stdlib.h"
 
 #define BITS_PER_BYTE 8
 #define BLOCK_BITS 512

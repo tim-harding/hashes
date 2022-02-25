@@ -1,6 +1,7 @@
 #ifndef DIGEST_H
 #define DIGEST_H
 
+#include "shared.h"
 #include <stdbool.h>
 
 typedef struct Digest {
