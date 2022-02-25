@@ -33,27 +33,18 @@ forward_declare_debug_primitive(u16, u);
 forward_declare_debug_primitive(u32, u);
 forward_declare_debug_primitive(u64, lu);
 
-#define debug(X) _Generic((X),            \
-                          float           \
-                          : debug_float,  \
-                            double        \
-                          : debug_double, \
-                            i8            \
-                          : debug_i8,     \
-                            i16           \
-                          : debug_i16,    \
-                            i32           \
-                          : debug_i32,    \
-                            i64           \
-                          : debug_i64,    \
-                            u8            \
-                          : debug_u8,     \
-                            u16           \
-                          : debug_u16,    \
-                            u32           \
-                          : debug_u32,    \
-                            u64           \
-                          : debug_u64)(X, #X)
+#define debug(X)                   \
+    _Generic((X), float            \
+             : debug_float, double \
+             : debug_double, i8    \
+             : debug_i8, i16       \
+             : debug_i16, i32      \
+             : debug_i32, i64      \
+             : debug_i64, u8       \
+             : debug_u8, u16       \
+             : debug_u16, u32      \
+             : debug_u32, u64      \
+             : debug_u64)(X, #X)
 
 #define trace() printf("TRACE %03d %s\n", __LINE__, __FILE__)
 

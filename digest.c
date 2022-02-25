@@ -1,11 +1,8 @@
 #include "digest.h"
 
 bool Digest_equal(Digest left, Digest right) {
-    return
-        left.a == right.a &&
-        left.b == right.b &&
-        left.c == right.c &&
-        left.d == right.d;
+    return left.a == right.a && left.b == right.b && left.c == right.c &&
+           left.d == right.d;
 }
 
 void swap(u8* bytes, u8 i, u8 j) {
@@ -15,7 +12,7 @@ void swap(u8* bytes, u8 i, u8 j) {
 }
 
 u32 reverse_endianness(u32 n) {
-    u8* bytes = (u8*) &n;
+    u8* bytes = (u8*)&n;
     swap(bytes, 0, 3);
     swap(bytes, 1, 2);
     return n;
@@ -32,7 +29,7 @@ Digest Digest_from_be(u32 a, u32 b, u32 c, u32 d) {
 }
 
 void print_le(u32 n) {
-    u8* bytes = (u8*) &n;
+    u8* bytes = (u8*)&n;
     for (u8 i = 0; i < 4; i++) {
         printf("%02x", bytes[i]);
     }

@@ -2,6 +2,7 @@
 #define DIGEST_H
 
 #include <stdbool.h>
+
 #include "th_stdlib.h"
 
 typedef struct Digest {
