@@ -1,8 +1,8 @@
 #ifndef DIGEST_H
 #define DIGEST_H
 
-#include "shared.h"
 #include <stdbool.h>
+#include "th_stdlib.h"
 
 typedef struct Digest {
     u32 a;
