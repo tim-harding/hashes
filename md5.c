@@ -44,7 +44,6 @@ Digest contribute_block(Block* block, Digest digest) {
     return Digest_sum(digest, inner);
 }
 
-
 void compute_sines(u32 sines[BLOCK_BYTES]) {
     for (u32 i = 0; i < BLOCK_BYTES; i++) {
         sines[i] = floor(SINE_MULTIPLICAND * fabs(sin(i + 1)));
@@ -70,8 +69,8 @@ Digest hash(const char* message) {
     }
 
     Block padded_block;
-    memset(&padded_block.byte, 0, BLOCK_BYTES);
-    memcpy(&padded_block.byte, &blocks[whole_block_count].byte, last_block_remainder);
+    memset(&padded_block, 0, BLOCK_BYTES);
+    memcpy(&padded_block, &blocks[whole_block_count], last_block_remainder);
     padded_block.byte[last_block_remainder] = 0x80;
     if (last_block_remainder > FINAL_BLOCK_MESSAGE_BYTES) {
         digest = contribute_block(&padded_block, digest);
