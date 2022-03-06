@@ -1,0 +1,11 @@
+{
+    "files.associations": {
+        "*.rkt": "racket",
+        "new": "c",
+        "padded_message.h": "c",
+        "md5.h": "c",
+        "test.h": "c",
+        "digest.h": "c",
+        "th_stdlib.h": "c"
+    }
+}
