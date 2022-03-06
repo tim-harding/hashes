@@ -2,8 +2,8 @@
 
 u32 rotate_left(u32 n, u8 bits) { return (n << bits) | (n >> (32 - bits)); }
 
-State shuffle(u32* w, State state, u32 i, u32 f, u32 k) {
-    State out = {
+Hash shuffle(u32* w, Hash state, u32 i, u32 f, u32 k) {
+    Hash out = {
         .a = rotate_left(state.a, 5) + f + state.e + k + w[i],
         .b = state.a,
         .c = rotate_left(state.b, 30),
@@ -13,14 +13,14 @@ State shuffle(u32* w, State state, u32 i, u32 f, u32 k) {
     return out;
 }
 
-State contribute_block(Block* block, State digest) {
+Hash contribute_block(Block* block, Hash digest) {
     u32 w[80];
     memcpy(w, block->byte, 16 * sizeof(u32));
     for (u32 i = 16; i < 80; i++) {
         w[i] = rotate_left(w[i-3] ^ w[i-14] ^ w[i-16], 1);
     }
 
-    State inner = digest;
+    Hash inner = digest;
 
     for (u32 i = 0; i < 20; i++) {
         u32 f = (inner.b & inner.c) | (~inner.b & inner.d);
@@ -42,7 +42,7 @@ State contribute_block(Block* block, State digest) {
         inner = shuffle(block, inner, i, f, 0xCA62C1D6);
     }
 
-    return State_sum(digest, inner);
+    return Hash_sum(digest, inner);
 }
 
 void initialize_sines() {
@@ -58,7 +58,7 @@ Hash hash(const char* message) {
     u32 whole_block_count = message_length / BLOCK_BYTES;
     u32 last_block_remainder = message_length % BLOCK_BYTES;
 
-    State state = {
+    Hash state = {
         .a = 0x67452301,
         .b = 0xEFCDAB89,
         .c = 0x98BADCFE,
@@ -81,5 +81,5 @@ Hash hash(const char* message) {
     padded_block.long_word[BLOCK_U64S - 1] = message_length * BITS_PER_BYTE;
     state = contribute_block(&padded_block, state);
 
-    return State_to_hash(state);
+    return state;
 }
