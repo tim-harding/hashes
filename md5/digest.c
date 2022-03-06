@@ -1,6 +1,6 @@
 #include "digest.h"
 
-bool Digest_equal(Digest left, Digest right) {
+bool Digest_equal(Hash left, Hash right) {
     return left.a == right.a && left.b == right.b && left.c == right.c &&
            left.d == right.d;
 }
@@ -18,8 +18,8 @@ u32 reverse_endianness(u32 n) {
     return n;
 }
 
-Digest Digest_from_be(u32 a, u32 b, u32 c, u32 d) {
-    Digest digest = {
+Hash Digest_from_be(u32 a, u32 b, u32 c, u32 d) {
+    Hash digest = {
         .a = reverse_endianness(a),
         .b = reverse_endianness(b),
         .c = reverse_endianness(c),
@@ -35,15 +35,15 @@ void print_le(u32 n) {
     }
 }
 
-void Digest_print(Digest digest) {
+void Digest_print(Hash digest) {
     print_le(digest.a);
     print_le(digest.b);
     print_le(digest.c);
     print_le(digest.b);
 }
 
-Digest Digest_sum(Digest left, Digest right) {
-    Digest out = {
+Hash Digest_sum(Hash left, Hash right) {
+    Hash out = {
         .a = left.a + right.a,
         .b = left.b + right.b,
         .c = left.c + right.c,

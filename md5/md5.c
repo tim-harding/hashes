@@ -4,7 +4,7 @@
 
 u32 rotate_left(u32 n, u8 bits) { return (n << bits) | (n >> (32 - bits)); }
 
-Digest shuffle(Block* block, Digest digest, u32 i, u32 f, u32 g) {
+Hash shuffle(Block* block, Hash digest, u32 i, u32 f, u32 g) {
     f += digest.a + SINES[i] + block->word[g];
     digest.a = digest.d;
     digest.d = digest.c;
@@ -14,8 +14,8 @@ Digest shuffle(Block* block, Digest digest, u32 i, u32 f, u32 g) {
     return digest;
 }
 
-Digest contribute_block(Block* block, Digest digest) {
-    Digest inner = digest;
+Hash contribute_block(Block* block, Hash digest) {
+    Hash inner = digest;
 
     for (u32 i = 0; i < 16; i++) {
         u32 f = (inner.b & inner.c) | (~inner.b & inner.d);
@@ -50,14 +50,14 @@ void initialize_sines() {
     }
 }
 
-Digest hash(const char* message) {
+Hash hash(const char* message) {
     initialize_sines();
     Block* blocks = (Block*)message;
     u32 message_length = strlen(message);
     u32 whole_block_count = message_length / BLOCK_BYTES;
     u32 last_block_remainder = message_length % BLOCK_BYTES;
 
-    Digest digest = {
+    Hash digest = {
         .a = 0x67452301,
         .b = 0xefcdab89,
         .c = 0x98badcfe,

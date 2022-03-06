@@ -44,6 +44,6 @@ const u8 SHIFTS[] = {
 
 u32 SINES[64];
 
-Digest hash(const char* message);
+Hash hash(const char* message);
 
 #endif

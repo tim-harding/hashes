@@ -1,2 +1,2 @@
 #! /usr/bin/bash
-gcc unity.c -o md5 -Wall -Wextra -Werror -g -lm
+gcc unity.c -o sha1 -Wall -Wextra -Werror -g -lm

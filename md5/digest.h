@@ -5,16 +5,16 @@
 
 #include "th_stdlib.h"
 
-typedef struct Digest {
+typedef struct Hash {
     u32 a;
     u32 b;
     u32 c;
     u32 d;
-} Digest;
+} Hash;
 
-void Digest_print(Digest digest);
-bool Digest_equal(Digest left, Digest right);
-Digest Digest_from_be(u32 a, u32 b, u32 c, u32 d);
-Digest Digest_sum(Digest left, Digest right);
+void Digest_print(Hash digest);
+bool Digest_equal(Hash left, Hash right);
+Hash Digest_from_be(u32 a, u32 b, u32 c, u32 d);
+Hash Digest_sum(Hash left, Hash right);
 
 #endif

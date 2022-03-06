@@ -7,6 +7,6 @@
 
 void test_padding(const char* message, const char* expected,
                   u32 expected_length);
-void test_digest(char* message, Digest expected);
+void test_digest(char* message, Hash expected);
 
 #endif
