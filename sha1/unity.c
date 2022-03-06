@@ -2,3 +2,4 @@
 #include "sha1.c"
 #include "test.c"
 #include "th_stdlib.c"
+#include "shared.c"

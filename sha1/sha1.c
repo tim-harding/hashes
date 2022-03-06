@@ -13,36 +13,36 @@ Hash shuffle(u32* w, Hash state, u32 i, u32 f, u32 k) {
     return out;
 }
 
-Hash contribute_block(Block* block, Hash previous_hash) {
+Hash contribute_block(Block* block, Hash digest) {
     u32 w[80];
     memcpy(w, block->byte, 16 * sizeof(u32));
     for (u32 i = 16; i < 80; i++) {
-        w[i] = rotate_left(w[i - 3] ^ w[i - 14] ^ w[i - 16], 1);
+        w[i] = rotate_left(w[i - 3] ^ w[i - 8] ^ w[i - 14] ^ w[i - 16], 1);
     }
 
-    Hash hash = previous_hash;
+    Hash inner = digest;
 
     for (u32 i = 0; i < 20; i++) {
-        u32 f = (hash.b & hash.c) | (~hash.b & hash.d);
-        hash = shuffle(w, hash, i, f, 0x5A827999);
+        u32 f = (inner.b & inner.c) | (~inner.b & inner.d);
+        inner = shuffle(w, inner, i, f, 0x5A827999);
     }
 
     for (u32 i = 20; i < 40; i++) {
-        u32 f = (hash.d & hash.b) | (~hash.d & hash.c);
-        hash = shuffle(w, hash, i, f, 0x6ED9EBA1);
+        u32 f = (inner.d & inner.b) | (~inner.d & inner.c);
+        inner = shuffle(w, inner, i, f, 0x6ED9EBA1);
     }
 
     for (u32 i = 40; i < 60; i++) {
-        u32 f = (hash.b & hash.c) | (hash.b & hash.d) | (hash.c & hash.d);
-        hash = shuffle(w, hash, i, f, 0x8F1BBCDC);
+        u32 f = (inner.b & inner.c) | (inner.b & inner.d) | (inner.c & inner.d);
+        inner = shuffle(w, inner, i, f, 0x8F1BBCDC);
     }
 
     for (u32 i = 60; i < 80; i++) {
-        u32 f = hash.b ^ hash.c ^ hash.d;
-        hash = shuffle(w, hash, i, f, 0xCA62C1D6);
+        u32 f = inner.b ^ inner.c ^ inner.d;
+        inner = shuffle(w, inner, i, f, 0xCA62C1D6);
     }
 
-    return Hash_sum(previous_hash, hash);
+    return Hash_sum(digest, inner);
 }
 
 void initialize_sines() {
@@ -58,7 +58,7 @@ Hash hash(const char* message) {
     u32 whole_block_count = message_length / BLOCK_BYTES;
     u32 last_block_remainder = message_length % BLOCK_BYTES;
 
-    Hash state = {
+    Hash hash = {
         .a = 0x67452301,
         .b = 0xEFCDAB89,
         .c = 0x98BADCFE,
@@ -67,7 +67,7 @@ Hash hash(const char* message) {
     };
 
     for (u32 block_i = 0; block_i < whole_block_count; block_i++) {
-        state = contribute_block(&blocks[block_i], state);
+        hash = contribute_block(&blocks[block_i], hash);
     }
 
     Block padded_block;
@@ -75,11 +75,12 @@ Hash hash(const char* message) {
     memcpy(&padded_block, &blocks[whole_block_count], last_block_remainder);
     padded_block.byte[last_block_remainder] = 0x80;
     if (last_block_remainder > FINAL_BLOCK_MESSAGE_BYTES) {
-        state = contribute_block(&padded_block, state);
+        hash = contribute_block(&padded_block, hash);
         memset(&padded_block.byte, 0, BLOCK_BYTES);
     }
-    padded_block.long_word[BLOCK_U64S - 1] = message_length * BITS_PER_BYTE;
-    state = contribute_block(&padded_block, state);
+    padded_block.long_word[BLOCK_U64S - 1] =
+        reverse_endianness_u64(message_length * BITS_PER_BYTE);
+    hash = contribute_block(&padded_block, hash);
 
-    return state;
+    return hash;
 }

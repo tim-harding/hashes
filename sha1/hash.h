@@ -4,6 +4,7 @@
 #include <stdbool.h>
 
 #include "th_stdlib.h"
+#include "shared.h"
 
 typedef struct Hash {
     u32 a;

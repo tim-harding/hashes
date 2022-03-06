@@ -5,26 +5,13 @@ bool Hash_equal(Hash left, Hash right) {
            left.d == right.d && left.e == right.e;
 }
 
-void swap(u8* bytes, u8 i, u8 j) {
-    u8 tmp = bytes[i];
-    bytes[i] = bytes[j];
-    bytes[j] = tmp;
-}
-
-u32 reverse_endianness(u32 n) {
-    u8* bytes = (u8*)&n;
-    swap(bytes, 0, 3);
-    swap(bytes, 1, 2);
-    return n;
-}
-
 Hash Hash_from_be(u32 a, u32 b, u32 c, u32 d, u32 e) {
     Hash hash = {
-        .a = reverse_endianness(a),
-        .b = reverse_endianness(b),
-        .c = reverse_endianness(c),
-        .d = reverse_endianness(d),
-        .e = reverse_endianness(e),
+        .a = reverse_endianness_u32(a),
+        .b = reverse_endianness_u32(b),
+        .c = reverse_endianness_u32(c),
+        .d = reverse_endianness_u32(d),
+        .e = reverse_endianness_u32(e),
     };
     return hash;
 }
