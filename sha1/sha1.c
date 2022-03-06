@@ -2,7 +2,7 @@
 
 u32 rotate_left(u32 n, u8 bits) { return (n << bits) | (n >> (32 - bits)); }
 
-Hash shuffle(u32* w, Hash state, u32 i, u32 f, u32 k) {
+Hash shuffle(u32 w[80], Hash state, u32 i, u32 f, u32 k) {
     Hash out = {
         .a = rotate_left(state.a, 5) + f + state.e + k + w[i],
         .b = state.a,
@@ -15,7 +15,7 @@ Hash shuffle(u32* w, Hash state, u32 i, u32 f, u32 k) {
 
 Hash contribute_block(Block* block, Hash previous_hash) {
     u32 w[80];
-    memcpy(w, block->byte, 16 * sizeof(u32));
+    memcpy(w, block, 16 * sizeof(u32));
     for (u32 i = 16; i < 80; i++) {
         w[i] = rotate_left(w[i - 3] ^ w[i - 8] ^ w[i - 14] ^ w[i - 16], 1);
     }
