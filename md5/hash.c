@@ -1,4 +1,4 @@
-#include "digest.h"
+#include "hash.h"
 
 bool Digest_equal(Hash left, Hash right) {
     return left.a == right.a && left.b == right.b && left.c == right.c &&

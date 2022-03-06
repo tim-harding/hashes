@@ -1,7 +1,7 @@
 #ifndef TEST_H
 #define TEST_H
 
-#include "digest.h"
+#include "hash.h"
 #include "md5.h"
 #include "th_stdlib.h"
 

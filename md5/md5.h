@@ -7,7 +7,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "digest.h"
+#include "hash.h"
 #include "th_stdlib.h"
 
 #define BITS_PER_BYTE 8
