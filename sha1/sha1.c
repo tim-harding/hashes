@@ -45,14 +45,7 @@ Hash contribute_block(Block* block, Hash previous_hash) {
     return Hash_sum(previous_hash, hash);
 }
 
-void initialize_sines() {
-    for (u32 i = 0; i < BLOCK_BYTES; i++) {
-        SINES[i] = floor(SINE_MULTIPLICAND * fabs(sin(i + 1)));
-    }
-}
-
 Hash hash(const char* message) {
-    initialize_sines();
     Block* blocks = (Block*)message;
     u32 message_length = strlen(message);
     u32 whole_block_count = message_length / BLOCK_BYTES;

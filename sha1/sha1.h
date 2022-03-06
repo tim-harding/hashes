@@ -27,22 +27,11 @@
 #define FINAL_BLOCK_MESSAGE_BYTES \
     (BLOCK_BYTES - MESSAGE_LENGTH_BYTES - MINIMUM_PADDING_BYTES)
 
-#define SINE_MULTIPLICAND ((u64)1 << (u64)32)
-
 typedef union Block {
     u8 byte[BLOCK_BYTES];
     u32 word[BLOCK_U32S];
     u64 long_word[BLOCK_U64S];
 } Block;
-
-const u8 SHIFTS[] = {
-    7, 12, 17, 22, // Round 1
-    5, 9,  14, 20, // Round 2
-    4, 11, 16, 23, // Round 3
-    6, 10, 15, 21, // Round 4
-};
-
-u32 SINES[64];
 
 Hash hash(const char* message);
 
