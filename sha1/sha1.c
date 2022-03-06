@@ -13,36 +13,36 @@ Hash shuffle(u32* w, Hash state, u32 i, u32 f, u32 k) {
     return out;
 }
 
-Hash contribute_block(Block* block, Hash digest) {
+Hash contribute_block(Block* block, Hash previous_hash) {
     u32 w[80];
     memcpy(w, block->byte, 16 * sizeof(u32));
     for (u32 i = 16; i < 80; i++) {
         w[i] = rotate_left(w[i - 3] ^ w[i - 8] ^ w[i - 14] ^ w[i - 16], 1);
     }
 
-    Hash inner = digest;
+    Hash hash = previous_hash;
 
     for (u32 i = 0; i < 20; i++) {
-        u32 f = (inner.b & inner.c) | (~inner.b & inner.d);
-        inner = shuffle(w, inner, i, f, 0x5A827999);
+        u32 f = (hash.b & hash.c) | (~hash.b & hash.d);
+        hash = shuffle(w, hash, i, f, 0x5A827999);
     }
 
     for (u32 i = 20; i < 40; i++) {
-        u32 f = (inner.d & inner.b) | (~inner.d & inner.c);
-        inner = shuffle(w, inner, i, f, 0x6ED9EBA1);
+        u32 f = hash.b ^ hash.c ^ hash.d;
+        hash = shuffle(w, hash, i, f, 0x6ED9EBA1);
     }
 
     for (u32 i = 40; i < 60; i++) {
-        u32 f = (inner.b & inner.c) | (inner.b & inner.d) | (inner.c & inner.d);
-        inner = shuffle(w, inner, i, f, 0x8F1BBCDC);
+        u32 f = (hash.b & hash.c) | (hash.b & hash.d) | (hash.c & hash.d);
+        hash = shuffle(w, hash, i, f, 0x8F1BBCDC);
     }
 
     for (u32 i = 60; i < 80; i++) {
-        u32 f = inner.b ^ inner.c ^ inner.d;
-        inner = shuffle(w, inner, i, f, 0xCA62C1D6);
+        u32 f = hash.b ^ hash.c ^ hash.d;
+        hash = shuffle(w, hash, i, f, 0xCA62C1D6);
     }
 
-    return Hash_sum(digest, inner);
+    return Hash_sum(previous_hash, hash);
 }
 
 void initialize_sines() {
