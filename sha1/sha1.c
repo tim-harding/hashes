@@ -39,7 +39,7 @@ Hash contribute_block(Block* block, Hash digest) {
         inner = shuffle(block, inner, i, f, g);
     }
 
-    return Digest_sum(digest, inner);
+    return Hash_sum(digest, inner);
 }
 
 void initialize_sines() {

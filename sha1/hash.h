@@ -10,11 +10,12 @@ typedef struct Hash {
     u32 b;
     u32 c;
     u32 d;
+    u32 e;
 } Hash;
 
-void Digest_print(Hash digest);
-bool Digest_equal(Hash left, Hash right);
-Hash Digest_from_be(u32 a, u32 b, u32 c, u32 d);
-Hash Digest_sum(Hash left, Hash right);
+void Hash_print(Hash hash);
+bool Hash_equal(Hash left, Hash right);
+Hash Hash_from_be(u32 a, u32 b, u32 c, u32 d, u32 e);
+Hash Hash_sum(Hash left, Hash right);
 
 #endif

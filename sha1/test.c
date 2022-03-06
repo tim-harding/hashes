@@ -1,32 +1,32 @@
 #include "test.h"
 
 int main() {
-    char message1[] = "The quick brown fox jumps over the lazy dog";
+    char message1[] = "sha1 this string";
     Hash expected1 =
-        Digest_from_be(0x9e107d9d, 0x372bb682, 0x6bd81d35, 0x42a419d6);
+        Hash_from_be(0XCF23DF22, 0X07D99A74, 0XFBE169E3, 0XEBA035E6, 0X33B65D94);
     test_digest(message1, expected1);
 
-    char message2[] = "The quick brown fox jumps over the lazy dog.";
+    char message2[] = "The path of the righteous man is beset on all sides";
     Hash expected2 =
-        Digest_from_be(0xe4d909c2, 0x90d0fb1c, 0xa068ffad, 0xdf22cbd0);
+        Hash_from_be(0xD1A04E8A, 0xE06E4921, 0xE1088CA4, 0x8025BEB5, 0x1421F5BB);
     test_digest(message2, expected2);
 
     char message3[] = "";
     Hash expected3 =
-        Digest_from_be(0xd41d8cd9, 0x8f00b204, 0xe9800998, 0xecf8427e);
+        Hash_from_be(0XDA39A3EE, 0X5E6B4B0D, 0X3255BFEF, 0X95601890, 0XAFD80709);
     test_digest(message3, expected3);
 }
 
 void test_digest(char* message, Hash expected) {
     Hash digest = hash(message);
-    if (Digest_equal(digest, expected)) {
+    if (Hash_equal(digest, expected)) {
         printf("Success");
     } else {
         printf("Failure");
     }
     printf("\n\tExpected: ");
-    Digest_print(expected);
+    Hash_print(expected);
     printf("\n\tReceived: ");
-    Digest_print(digest);
+    Hash_print(digest);
     printf("\n\n");
 }

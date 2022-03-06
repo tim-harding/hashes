@@ -2,7 +2,7 @@
 #define TEST_H
 
 #include "hash.h"
-#include "md5.h"
+#include "sha1.h"
 #include "th_stdlib.h"
 
 void test_padding(const char* message, const char* expected,
