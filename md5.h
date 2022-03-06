@@ -35,9 +35,11 @@ typedef union Block {
     u64 long_word[BLOCK_U64S];
 } Block;
 
-// Todo: Reduce this using modulus
 const u8 SHIFTS[] = {
-    7, 12, 17, 22, 5, 9, 14, 20, 4, 11, 16, 23, 6, 10, 15, 21,
+    7, 12, 17, 22, // Round 1
+    5, 9,  14, 20, // Round 2
+    4, 11, 16, 23, // Round 3
+    6, 10, 15, 21, // Round 4
 };
 
 u32 SINES[64];
