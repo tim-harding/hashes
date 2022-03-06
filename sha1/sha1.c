@@ -2,44 +2,47 @@
 
 u32 rotate_left(u32 n, u8 bits) { return (n << bits) | (n >> (32 - bits)); }
 
-Hash shuffle(Block* block, Hash digest, u32 i, u32 f, u32 g) {
-    f += digest.a + SINES[i] + block->word[g];
-    digest.a = digest.d;
-    digest.d = digest.c;
-    digest.c = digest.b;
-    u32 shifts_index = (i / 16) * 4 + (i % 4);
-    digest.b += rotate_left(f, SHIFTS[shifts_index]);
-    return digest;
+State shuffle(u32* w, State state, u32 i, u32 f, u32 k) {
+    State out = {
+        .a = rotate_left(state.a, 5) + f + state.e + k + w[i],
+        .b = state.a,
+        .c = rotate_left(state.b, 30),
+        .d = state.c,
+        .e = state.d,
+    };
+    return out;
 }
 
-Hash contribute_block(Block* block, Hash digest) {
-    Hash inner = digest;
+State contribute_block(Block* block, State digest) {
+    u32 w[80];
+    memcpy(w, block->byte, 16 * sizeof(u32));
+    for (u32 i = 16; i < 80; i++) {
+        w[i] = rotate_left(w[i-3] ^ w[i-14] ^ w[i-16], 1);
+    }
 
-    for (u32 i = 0; i < 16; i++) {
+    State inner = digest;
+
+    for (u32 i = 0; i < 20; i++) {
         u32 f = (inner.b & inner.c) | (~inner.b & inner.d);
-        u32 g = i;
-        inner = shuffle(block, inner, i, f, g);
+        inner = shuffle(block, inner, i, f, 0x5A827999);
     }
 
-    for (u32 i = 16; i < 32; i++) {
+    for (u32 i = 20; i < 40; i++) {
         u32 f = (inner.d & inner.b) | (~inner.d & inner.c);
-        u32 g = (5 * i + 1) % 16;
-        inner = shuffle(block, inner, i, f, g);
+        inner = shuffle(block, inner, i, f, 0x6ED9EBA1);
     }
 
-    for (u32 i = 32; i < 48; i++) {
+    for (u32 i = 40; i < 60; i++) {
+        u32 f = (inner.b & inner.c) | (inner.b & inner.d) | (inner.c & inner.d);
+        inner = shuffle(block, inner, i, f, 0x8F1BBCDC);
+    }
+
+    for (u32 i = 60; i < 80; i++) {
         u32 f = inner.b ^ inner.c ^ inner.d;
-        u32 g = (3 * i + 5) % 16;
-        inner = shuffle(block, inner, i, f, g);
+        inner = shuffle(block, inner, i, f, 0xCA62C1D6);
     }
 
-    for (u32 i = 48; i < 64; i++) {
-        u32 f = inner.c ^ (inner.b | ~inner.d);
-        u32 g = (7 * i) % 16;
-        inner = shuffle(block, inner, i, f, g);
-    }
-
-    return Hash_sum(digest, inner);
+    return State_sum(digest, inner);
 }
 
 void initialize_sines() {
@@ -55,15 +58,16 @@ Hash hash(const char* message) {
     u32 whole_block_count = message_length / BLOCK_BYTES;
     u32 last_block_remainder = message_length % BLOCK_BYTES;
 
-    Hash digest = {
+    State state = {
         .a = 0x67452301,
-        .b = 0xefcdab89,
-        .c = 0x98badcfe,
+        .b = 0xEFCDAB89,
+        .c = 0x98BADCFE,
         .d = 0x10325476,
+        .e = 0xC3D2E1F0,
     };
 
     for (u32 block_i = 0; block_i < whole_block_count; block_i++) {
-        digest = contribute_block(&blocks[block_i], digest);
+        state = contribute_block(&blocks[block_i], state);
     }
 
     Block padded_block;
@@ -71,11 +75,11 @@ Hash hash(const char* message) {
     memcpy(&padded_block, &blocks[whole_block_count], last_block_remainder);
     padded_block.byte[last_block_remainder] = 0x80;
     if (last_block_remainder > FINAL_BLOCK_MESSAGE_BYTES) {
-        digest = contribute_block(&padded_block, digest);
+        state = contribute_block(&padded_block, state);
         memset(&padded_block.byte, 0, BLOCK_BYTES);
     }
     padded_block.long_word[BLOCK_U64S - 1] = message_length * BITS_PER_BYTE;
-    digest = contribute_block(&padded_block, digest);
+    state = contribute_block(&padded_block, state);
 
-    return digest;
+    return State_to_hash(state);
 }
