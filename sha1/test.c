@@ -3,7 +3,7 @@
 int main() {
     char message1[] = "sha1 this string";
     Hash expected1 =
-        Hash_from_be(0XCF23DF22, 0X07D99A74, 0XFBE169E3, 0XEBA035E6, 0X33B65D94);
+        Hash_from_be(0xCF23DF22, 0x07D99A74, 0xFBE169E3, 0xEBA035E6, 0x33B65D94);
     test_digest(message1, expected1);
 
     char message2[] = "The path of the righteous man is beset on all sides";
@@ -13,7 +13,7 @@ int main() {
 
     char message3[] = "";
     Hash expected3 =
-        Hash_from_be(0XDA39A3EE, 0X5E6B4B0D, 0X3255BFEF, 0X95601890, 0XAFD80709);
+        Hash_from_be(0xDA39A3EE, 0x5E6B4B0D, 0x3255BFEF, 0x95601890, 0xAFD80709);
     test_digest(message3, expected3);
 }
 
